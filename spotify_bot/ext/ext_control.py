@@ -85,6 +85,12 @@ class SpotifyControl(object):
         """
         return self.spotify('previous track')
 
+    def play_track(self, uri):
+        """
+        Start playback of a track in the given context.
+        """
+        return self.spotify('play track {0}'.format(uri))
+
     def current_track(self):
         """
         Get some meta data from the currently playing track.

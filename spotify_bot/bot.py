@@ -2,6 +2,7 @@ import re
 import string
 from six import StringIO
 
+import spotipy
 import requests
 
 from telegram.emoji import Emoji
@@ -19,6 +20,7 @@ class SpotifyBot(object):
 
         self.telegram_api_key = config['telegram']
         self.control = ext.SpotifyControl()
+        self.spotify = spotipy.Spotify()
 
     @property
     def keyboard(self):
@@ -83,7 +85,24 @@ class SpotifyBot(object):
 
     def command_playpause(self, bot, update):
         self.control.playpause()
-        return self.command_status(bot, update)
+        self.command_status(bot, update)
+
+    def command_search(self, bot, update, args):
+        results = self.spotify.search(q=' '.join(args))
+
+        msgs = []
+
+        result_msg = '*{0}* by {1} /play {2}'
+
+        for r in results['tracks']['items']:
+            msgs.append(result_msg.format(r['name'], r['artists'][0]['name'],
+                                          r['uri']))
+
+        self.send_messages(bot, update, msgs)
+
+    def command_play(self, bot, update, args):
+        self.control.play_track(''.join(args))
+        self.command_status(bot, update)
 
     def noncommand_text(self, bot, update):
         # Get the message text and convert to lowercase
@@ -119,6 +138,10 @@ class SpotifyBot(object):
 
         dp.add_handler(CommandHandler('status', self.command_status))
         dp.add_handler(CommandHandler('playpause', self.command_playpause))
+        dp.add_handler(CommandHandler('search', self.command_search,
+                                      pass_args=True))
+        dp.add_handler(CommandHandler('play', self.command_play,
+                                      pass_args=True))
 
         dp.add_handler(MessageHandler([Filters.text], self.noncommand_text))
 
