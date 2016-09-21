@@ -37,9 +37,8 @@ version of Python:
 
 ```
 (telegram-spotify-bot) ~/telegram-spotify-bot $ python --version
-Python 2.7.12
-(telegram-spotify-bot) ~/telegram-spotify-bot $ pip --version
-pip 8.0.2 from /Users/.../site-packages (python 2.7)
+Python 3.5.2
+(telegram-spotify-bot) ~/telegram-spotify-bot $ pip 8.0.2 from /Users/Myles/.virtualenvs/telegram-spotify-bot/lib/python3.5/site-packages (python 3.5)
 ```
 
 Install the project requirements:
