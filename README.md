@@ -12,7 +12,7 @@ A Telegram Bot I created to control my Spotify account.
 
 You will need the following:
 
-* Python 2.7
+* Python 2.5
 * pip
 * virtualenvwrapper
 * API Keys for Spotify
