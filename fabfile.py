@@ -97,7 +97,7 @@ def supervisorctl_restart():
 @api.task
 @api.parallel
 def tail():
-    assert(api.env.remote_interrupt == True)
+    assert(api.env.remote_interrupt is True)
     with api.settings(warn_only=True):
         api.run('tail -n 50 -f {0}'.format(api.env.bot_log))
 

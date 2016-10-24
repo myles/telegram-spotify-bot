@@ -1,7 +1,4 @@
-import os
 import subprocess
-
-from time import sleep
 
 
 class SpotifyControl(object):
@@ -30,7 +27,8 @@ class SpotifyControl(object):
         """
         Check to see if Spotify is currently running.
         """
-        output = self.osascript('application "{0}" is running'.format(self.app))
+        command = 'application "{0}" is running'
+        output = self.osascript(command.format(self.app))
 
         if output == 'true':
             return True
@@ -89,7 +87,7 @@ class SpotifyControl(object):
         """
         Start playback of a track in the given context.
         """
-        return self.spotify('play track {0}'.format(uri))
+        return self.spotify('play track "{0}"'.format(uri))
 
     def current_track(self):
         """

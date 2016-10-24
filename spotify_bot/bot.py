@@ -1,11 +1,9 @@
-import re
 import string
 from six import StringIO
 
 import spotipy
 import requests
 
-from telegram.emoji import Emoji
 from telegram.parsemode import ParseMode
 from telegram import ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
@@ -24,6 +22,9 @@ class SpotifyBot(object):
 
     @property
     def keyboard(self):
+        if not self.control.is_running():
+            return [[KeyboardButton('Activate Spotify')]]
+
         if self.control.player_state() == 'playing':
             play_pause_button = KeyboardButton('Pause')
         else:
@@ -75,7 +76,7 @@ class SpotifyBot(object):
         current_track = self.control.current_track()
 
         if player_state == 'stopped':
-            return seld.send_message(bot, update, 'Spotify is stopped.')
+            return self.send_message(bot, update, 'Spotify is stopped.')
 
         msg_line_one = 'Spotify is {0}\n'.format(player_state)
         msg_line_two = '*{name}* by {artist} from ' \
@@ -112,21 +113,40 @@ class SpotifyBot(object):
         punctuation = set(string.punctuation)
         text = ''.join(c for c in text if c not in punctuation)
 
-        if text in ['play']:
+        if text in ['activate spotify']:
+            self.control.activate()
+            self.command_status(bot, update)
+
+        if text in ['play', '▶️']:
             self.control.play()
             self.command_status(bot, update)
 
-        if text in ['pause']:
+        if text in ['pause', '⏸']:
             self.control.pause()
             self.command_status(bot, update)
 
-        if text in ['next']:
+        if text in ['next', '⏭']:
             self.control.next_track()
             self.command_status(bot, update)
 
-        if text in ['previous']:
+        if text in ['previous', '⏮']:
             self.control.previous_track()
             self.command_status(bot, update)
+
+        if text in ['⏯']:
+            self.command_playpause(bot, update)
+
+        if text in ['🎉']:
+            self.command_play(bot, update,
+                              'spotify:track:7LyIoUsiMtelB1I0I4drEF')
+
+        if text in ['🐍']:
+            self.command_play(bot, update,
+                              'spotify:track:0oIvPKyNldMnehctuxeFH5')
+
+        if text in ['👑']:
+            self.command_play(bot, update,
+                              'spotify:track:25gSVIBOWeUqXG8DnzpCCs')
 
     def run(self):
         updater = Updater(self.telegram_api_key)
