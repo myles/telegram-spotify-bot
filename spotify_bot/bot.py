@@ -6,7 +6,10 @@ import requests
 
 from telegram.parsemode import ParseMode
 from telegram import ReplyKeyboardMarkup, KeyboardButton
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram.inlinekeyboardmarkup import (InlineKeyboardMarkup,
+                                           InlineKeyboardButton)
+from telegram.ext import (Updater, CommandHandler, MessageHandler,
+                          CallbackQueryHandler, Filters)
 
 from spotify_bot import ext
 
@@ -34,13 +37,16 @@ class SpotifyBot(object):
                 [KeyboardButton('Previous'), KeyboardButton('Next')]]
 
     def send_message(self, bot, update, msg, disable_link_preview=True,
-                     **kwargs):
+                     reply_markup=None, *args, **kwargs):
+        if not reply_markup:
+            reply_markup = ReplyKeyboardMarkup(self.keyboard)
+
         return bot.sendMessage(update.message.chat_id, msg,
-                               reply_markup=ReplyKeyboardMarkup(self.keyboard),
+                               reply_markup=reply_markup,
                                resize_keyboard=True,
                                parse_mode=ParseMode.MARKDOWN,
                                disable_web_page_preview=disable_link_preview,
-                               **kwargs)
+                               *args, **kwargs)
 
     def send_messages(self, bot, update, messages):
         for msg in messages:
@@ -91,15 +97,14 @@ class SpotifyBot(object):
     def command_search(self, bot, update, args):
         results = self.spotify.search(q=' '.join(args))
 
-        msgs = []
-
-        result_msg = '*{0}* by {1} /play {2}'
-
         for r in results['tracks']['items']:
-            msgs.append(result_msg.format(r['name'], r['artists'][0]['name'],
-                                          r['uri']))
-
-        self.send_messages(bot, update, msgs)
+            btn_text = 'Play *{0}* by {1}'.format(r['name'],
+                                                  r['artists'][0]['name'])
+            button = InlineKeyboardButton(text=btn_text,
+                                          callback_data='play {uri}'.format(**r))
+            reply_markup = InlineKeyboardMarkup([[button]])
+            self.send_message(bot, update, msg=None,
+                              reply_markup=reply_markup)
 
     def command_play(self, bot, update, args):
         self.control.play_track(''.join(args))
@@ -148,6 +153,13 @@ class SpotifyBot(object):
             self.command_play(bot, update,
                               'spotify:track:25gSVIBOWeUqXG8DnzpCCs')
 
+
+    def button(self, bot, update):
+        query = str(update.callback_query.message)
+
+        if query.startswith('play '):
+            self.command_play(bot, update, query.split('play ')[0])
+
     def run(self):
         updater = Updater(self.telegram_api_key)
 
@@ -162,6 +174,8 @@ class SpotifyBot(object):
                                       pass_args=True))
         dp.add_handler(CommandHandler('play', self.command_play,
                                       pass_args=True))
+
+        dp.add_handler(CallbackQueryHandler(self.button))
 
         dp.add_handler(MessageHandler([Filters.text], self.noncommand_text))
 
