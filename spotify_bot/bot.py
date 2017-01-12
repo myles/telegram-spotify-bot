@@ -6,8 +6,8 @@ import requests
 
 from telegram.parsemode import ParseMode
 from telegram import ReplyKeyboardMarkup, KeyboardButton
-from telegram.inlinekeyboardmarkup import (InlineKeyboardMarkup,
-                                           InlineKeyboardButton)
+from telegram.inlinekeyboardmarkup import (InlineKeyboardMarkup as IKM,
+                                           InlineKeyboardButton as IKB)
 from telegram.ext import (Updater, CommandHandler, MessageHandler,
                           CallbackQueryHandler, Filters)
 
@@ -100,9 +100,10 @@ class SpotifyBot(object):
         for r in results['tracks']['items']:
             btn_text = 'Play *{0}* by {1}'.format(r['name'],
                                                   r['artists'][0]['name'])
-            button = InlineKeyboardButton(text=btn_text,
-                                          callback_data='play {uri}'.format(**r))
-            reply_markup = InlineKeyboardMarkup([[button]])
+            button = IKB(text=btn_text,
+                         callback_data='play {uri}'.format(**r))
+
+            reply_markup = IKM([[button]])
             self.send_message(bot, update, msg=None,
                               reply_markup=reply_markup)
 
@@ -152,7 +153,6 @@ class SpotifyBot(object):
         if text in ['👑']:
             self.command_play(bot, update,
                               'spotify:track:25gSVIBOWeUqXG8DnzpCCs')
-
 
     def button(self, bot, update):
         query = str(update.callback_query.message)
