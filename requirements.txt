@@ -1,5 +1,5 @@
 certifi==2016.9.26
-future==0.15.2
+future==0.18.1
 python-telegram-bot==5.0.0
 requests==2.20.0
 six==1.10.0
