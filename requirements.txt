@@ -1,4 +1,4 @@
-certifi==2016.9.26
+certifi==2020.12.5
 future==0.18.1
 python-telegram-bot==5.0.0
 requests==2.23.0
