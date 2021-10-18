@@ -3,6 +3,6 @@ future==0.18.1
 python-telegram-bot==5.0.0
 requests==2.23.0
 six==1.10.0
-spotipy==2.3.8
+spotipy==2.19.0
 urllib3==1.25.6
 wheel==0.26.0
