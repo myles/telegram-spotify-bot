@@ -1,4 +1,6 @@
-[![Code Climate](https://codeclimate.com/github/myles/telegram-myles-bot/badges/gpa.svg)](https://codeclimate.com/github/myles/telegram-spotify-bot)
+# Status: Archived
+
+This repository has been archived and is no longer maintained.
 
 # Myles' Spotify Bot
 
